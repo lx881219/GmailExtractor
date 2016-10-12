@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>members</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+</head>
+<body>
+<h1>Hello {{ user.get_full_name|default:user.username }}!</h1><br>
+<p>Please be patient while we are retriving your gmail metadata...</p>
+<form action="{% url 'gmail:members' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <br>
+    <input type="submit" value="Download" />
+</form>
+{#<a href="/download">Download Metadata</a><br>#}
+<a href="{% url 'gmail:logout' %}">Logout</a>
+</body>
+</html>
