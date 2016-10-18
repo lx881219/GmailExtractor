@@ -7,15 +7,65 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
 </head>
 <body>
-<h1>Hello {{ user.get_full_name|default:user.username }}!</h1><br>
-<p>Please be patient while we are retriving your gmail metadata...</p>
-<form action="{% url 'gmail:members' %}" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <br>
-    <input type="submit" value="Download" />
-</form>
-{#<a href="/download">Download Metadata</a><br>#}
-<a href="{% url 'gmail:logout' %}">Logout</a>
+<!-- Navigation -->
+{#    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">#}
+{#        <div class="container">#}
+{#            <!-- Brand and toggle get grouped for better mobile display -->#}
+{#            <div class="navbar-header">#}
+{#                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">#}
+{#                    <span class="sr-only">Toggle navigation</span>#}
+{#                    <span class="icon-bar"></span>#}
+{#                    <span class="icon-bar"></span>#}
+{#                    <span class="icon-bar"></span>#}
+{#                </button>#}
+{#                <a class="navbar-brand" href="#">Start Bootstrap</a>#}
+{#            </div>#}
+{#            <!-- Collect the nav links, forms, and other content for toggling -->#}
+{#            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">#}
+{#                <ul class="nav navbar-nav">#}
+{#                    <li>#}
+{#                        <a href="#">About</a>#}
+{#                    </li>#}
+{#                    <li>#}
+{#                        <a href="#">Services</a>#}
+{#                    </li>#}
+{#                    <li>#}
+{#                        <a href="#">Contact</a>#}
+{#                    </li>#}
+{#                </ul>#}
+{#            </div>#}
+{#            <!-- /.navbar-collapse -->#}
+{#        </div>#}
+{#        <!-- /.container -->#}
+{#    </nav>#}
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1>Hello {{ user.get_full_name|default:user.username }}!</h1>
+                <p class="lead">Please be patient while we are retriving your gmail metadata...</p>
+                <form class="form" action="{% url 'gmail:members' %}" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+{#                    {% for field in form %}#}
+{#                        <fieldset class="form-group">#}
+{#                            <label class="control-label" for="id_{{ field.label }}">{{ field.label }}</label>#}
+{#                            <div class="form-control">#}
+{#                                <input class="form-control" id="id_{{ field.name }}" value="{{ field.value }}" name="{{ field.name }}">#}
+{#                                <p>{{ field.help_text }}</p>#}
+{#                            </div>#}
+{#                        </fieldset>#}
+{#                    {% endfor %}#}
+                    <input type="submit" value="Download" class="btn btn-primary"/>
+                </form>
+                <span class="glyphicon glyphicon-log-out" aria-hidden="true"><a href="{% url 'gmail:logout' %}">Logout</a></span>
+            </div>
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
 </body>
 </html>
