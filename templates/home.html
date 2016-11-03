@@ -3,15 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    {# Load the tag library #}
+    {% load bootstrap3 %}
+
+    {# Load CSS and JavaScript #}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
 </head>
 <body>
+    <!-- Page Content -->
+    <div class="container">
 
-<h1>Gmail Metadata Extractor</h1>
-<p>This app allows you to download your gmail metadata.</p>
-<p>It uses google OAuth2 to authorize user via google website. The server will NOT store any password or metadata of your gmail</p>
-<a href="login/google-oauth2">Login with google</a>
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+                <h1>Gmail Metadata Extractor</h1>
+                <p>This app allows you to download your gmail network data.</p>
+                <p>It uses google OAuth2 to authorize user via google website. The server will NOT store any password or metadata of your gmail.</p>
+                <P></P>
+                <a href="login/google-oauth2"><img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" title="Sign in with Google"></a>
+            </div>
+        </div>
+        <!-- /.row -->
+
+    </div>
 
 </body>
 </html>

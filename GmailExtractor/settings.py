@@ -25,7 +25,7 @@ SECRET_KEY = '71grc9tz39+yjvcx09k_le9wk@5*6tf&!g!^&bwt4q@2s-1v-4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'gmail.apps.GmailConfig',
     'social.apps.django_app.default',
+    'bootstrap3',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -50,6 +51,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'GmailExtractor.urls'
@@ -141,3 +143,5 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'FQ65nkiCTIVdnT-n3R0GQ0UT'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/gmail.readonly']
 
 LOGIN_REDIRECT_URL = '/gmail/members'
+LOGIN_ERROR_URL = '/gmail/login_error/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/gmail/login_error/'

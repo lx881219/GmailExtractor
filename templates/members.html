@@ -3,69 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>members</title>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    {# Load the tag library #}
+    {% load bootstrap3 %}
 </head>
 <body>
-<!-- Navigation -->
-{#    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">#}
-{#        <div class="container">#}
-{#            <!-- Brand and toggle get grouped for better mobile display -->#}
-{#            <div class="navbar-header">#}
-{#                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">#}
-{#                    <span class="sr-only">Toggle navigation</span>#}
-{#                    <span class="icon-bar"></span>#}
-{#                    <span class="icon-bar"></span>#}
-{#                    <span class="icon-bar"></span>#}
-{#                </button>#}
-{#                <a class="navbar-brand" href="#">Start Bootstrap</a>#}
-{#            </div>#}
-{#            <!-- Collect the nav links, forms, and other content for toggling -->#}
-{#            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">#}
-{#                <ul class="nav navbar-nav">#}
-{#                    <li>#}
-{#                        <a href="#">About</a>#}
-{#                    </li>#}
-{#                    <li>#}
-{#                        <a href="#">Services</a>#}
-{#                    </li>#}
-{#                    <li>#}
-{#                        <a href="#">Contact</a>#}
-{#                    </li>#}
-{#                </ul>#}
-{#            </div>#}
-{#            <!-- /.navbar-collapse -->#}
-{#        </div>#}
-{#        <!-- /.container -->#}
-{#    </nav>#}
 
     <!-- Page Content -->
     <div class="container">
 
         <div class="row">
-            <div class="col-lg-12 text-center">
-                <h1>Hello {{ user.get_full_name|default:user.username }}!</h1>
+            <div class="col-sm-8 col-sm-offset-2">
+                <h1>Hello {{ user.get_full_name|default:user.username }}!   <small><span class="glyphicon glyphicon-log-out" aria-hidden="true"><a href="{% url 'gmail:logout' %}">Logout</a></span></small></h1>
                 <p class="lead">Please be patient while we are retrieving your gmail metadata...</p>
-                <form class="form" action="{% url 'gmail:members' %}" method="post">
+                <form class="form-horizontal col-sm-8 col-sm-offset-2" action="{% url 'gmail:members' %}" method="post">
                     {% csrf_token %}
-                    {{ form }}
-{#                    {% for field in form %}#}
-{#                        <div class="fieldWrapper">#}
-{#                            {{ field.errors }}#}
-{#                            {{ field.label_tag }} {{ field }}#}
-{#                            {% if field.help_text %}#}
-{#                            <p class="help">{{ field.help_text|safe }}</p>#}
-{#                            {% endif %}#}
-{#                        </div>#}
-{#                    {% endfor %}#}
-                    <input type="submit" value="Download" class="btn btn-primary"/>
+                    {% bootstrap_form form layout='horizontal'%}
+                    {% buttons submit='Download' layout='horizontal' %}{% endbuttons %}
+{#                    <input type="submit" value="Download" class="btn btn-primary"/>#}
                 </form>
-                <span class="glyphicon glyphicon-log-out" aria-hidden="true"><a href="{% url 'gmail:logout' %}">Logout</a></span>
+{#                <span class="glyphicon glyphicon-log-out" aria-hidden="true"><a href="{% url 'gmail:logout' %}">Logout</a></span>#}
             </div>
         </div>
         <!-- /.row -->
 
     </div>
     <!-- /.container -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    {# Load CSS and JavaScript #}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <script>
+        $("#id_all_messages").change(function () {
+            if ($(this).is(":checked")){
+                $("#id_max_results").prop('disabled', true);
+            }
+            else {
+                $("#id_max_results").prop('disabled', false);
+            }
+
+        })
+
+    </script>
 </body>
 </html>
