@@ -5,43 +5,80 @@
     <title>members</title>
     {# Load the tag library #}
     {% load bootstrap3 %}
+    {# Display django.contrib.messages as Bootstrap alerts #}
+    {% bootstrap_messages %}
 </head>
 <body>
-
-    <!-- Page Content -->
     <div class="container">
 
-        <div class="row">
-            <div class="col-sm-8 col-sm-offset-2">
-                <h1>Hello {{ user.get_full_name|default:user.username }}!   <small><span class="glyphicon glyphicon-log-out" aria-hidden="true"><a href="{% url 'gmail:logout' %}">Logout</a></span></small></h1>
-                <p class="lead">Please be patient while we are retrieving your gmail metadata...</p>
-                <form class="form-horizontal col-sm-8 col-sm-offset-2" action="{% url 'gmail:members' %}" method="post">
-                    {% csrf_token %}
-                    {% bootstrap_form form layout='horizontal'%}
-                    {% buttons submit='Download' layout='horizontal' %}{% endbuttons %}
-{#                    <input type="submit" value="Download" class="btn btn-primary"/>#}
-                </form>
-{#                <span class="glyphicon glyphicon-log-out" aria-hidden="true"><a href="{% url 'gmail:logout' %}">Logout</a></span>#}
+      <!-- Static navbar -->
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Hello {{ user.get_full_name|default:user.username }}!</a>
             </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="active"><a href="{% url 'gmail:logout' %}">Logout </a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+    </nav>
+
+        <div class="row">
+            <p class="lead" style="text-align: center">Please be patient while we are retrieving your gmail metadata...</p>
+            <form class="form-horizontal" action="{% url 'gmail:members' %}" method="post" id="submit_form">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-sm-6">
+                        {% bootstrap_form form layout='horizontal' show_help=False %}
+                    </div>
+
+                    <div id="help_text" class="col-sm-5">
+                        {% for field in form %}
+                            {% if field.help_text %}
+                                <div class="row help-block" style="margin-bottom: 75px">{{ field.help_text | safe}}</div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row text-center">
+                    {% buttons submit='Download' %}{% endbuttons %}
+                </div>
+            </form>
         </div>
         <!-- /.row -->
 
-    </div>
-    <!-- /.container -->
+
+    </div> <!-- /container -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     {# Load CSS and JavaScript #}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
     <script>
-        $("#id_all_messages").change(function () {
-            if ($(this).is(":checked")){
-                $("#id_max_results").prop('disabled', true);
-            }
-            else {
-                $("#id_max_results").prop('disabled', false);
-            }
+        $(document).ready(function () {
+            $("#id_all_messages").change(function () {
+                if ($(this).is(":checked")){
+                    $("#id_max_results").prop('disabled', true);
+                }
+                else {
+                    $("#id_max_results").prop('disabled', false);
+                }
 
-        })
+            });
+
+            $("#submit_form").submit(function (event) {
+                $(".form-group").removeClass("has-success").removeClass("has-error");
+            })
+
+        });
+
 
     </script>
 </body>

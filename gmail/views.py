@@ -8,8 +8,10 @@ from django.http import StreamingHttpResponse, HttpResponseRedirect, HttpRespons
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import logout as auth_logout
+from django.contrib import messages as django_messages
 from oauth2client.contrib.django_orm import Storage
 from oauth2client.client import AccessTokenCredentials
+from oauth2client.client import AccessTokenCredentialsError
 
 from .forms import GmailFilter
 
@@ -31,8 +33,8 @@ class Echo(object):
 def _get_header(service, messages):
     def _message_metadata(request_id, response, exception):
         if exception is not None:
-            logger.debug("Error when getting data")
-            print("Error when getting data")
+            logger.debug("Error when getting data 150/batch")
+            # print("Error when getting data")
             pass
         else:
             if response.get('payload') is not None:
@@ -69,7 +71,7 @@ def _get_header(service, messages):
             batch.add(service.users().messages().get(userId='me', id=message['id'], format='metadata',
                                                      metadataHeaders=['From', 'To', 'CC', 'Bcc', 'Date'],
                                                      fields='payload/headers'), callback=_message_metadata)
-            if count % 250 == 0:
+            if count % 100 == 0:
                 batch.execute()
                 for res in result:
                     yield res
@@ -119,9 +121,13 @@ def members(request):
                     for label in labels:
                         if results_remained <= 0:
                             break
-                        response = service.users().messages().list(userId='me', maxResults=results_remained,
-                                                                   labelIds=label, q='after:%s before:%s' % (
-                                from_date, to_date)).execute()
+                        try:
+                            response = service.users().messages().list(userId='me', maxResults=results_remained,
+                                                                       labelIds=label, q='after:%s before:%s' % (
+                                    from_date, to_date)).execute()
+                        except AccessTokenCredentialsError as error:
+                            django_messages.error(request,
+                                                  "The access_token is expired or invalid and can\'t be refreshed. Please logout and login again!")
                         if 'messages' in response:
                             messages.extend(response.get('messages'))
                         results_remained -= len(response.get('messages'))
@@ -134,10 +140,14 @@ def members(request):
                             messages.extend(response.get('messages'))
                             results_remained -= len(response.get('messages'))
                 except errors.HttpError as error:
+                    django_messages.error(request,
+                                          "An error occurred. Please login again!")
                     print('An error occurred: %s' % error)
                 # GMAIL CHECK
                 if not messages:
-                    print('No Messages found.')
+                    django_messages.error(request,
+                                          "No Message found!")
+                    print('No Message found.')
                 else:
                     print(len(messages))
                     # # triditional way
@@ -156,14 +166,18 @@ def members(request):
                     # return response
 
                     # Use generator to speedup
+
                     rows = _get_header(service, messages)
                     pseudo_buffer = Echo()
                     writer = csv.writer(pseudo_buffer)
+                    # django_messages.success(request, "Start downloading")
                     response = StreamingHttpResponse((writer.writerow(row) for row in rows),
                                                      content_type="text/csv")
                     response['Content-Disposition'] = 'attachment; filename="gmail.csv"'
                     return response
         else:
+            django_messages.error(request,
+                                  "Form is not valid. Please correct the highlighted fields")
             print("Form not valid")
     else:
         # Get labels
@@ -175,18 +189,20 @@ def members(request):
             http = httplib2.Http()
             http = credential.authorize(http)
             service = discovery.build("gmail", "v1", http=http)
+            labels = []
             try:
                 response = service.users().labels().list(userId='me').execute()
-                labels = []
                 if 'labels' in response:
                     labels.extend(response.get('labels'))
-            except errors.HttpError as error:
+            except (AccessTokenCredentialsError, errors.HttpError) as error:
                 print('An error occurred: %s' % error)
-
+                django_messages.error(request,
+                                      "The access_token is expired or invalid and can\'t be refreshed. Please logout and login again!")
             # Labels check
             OPTIONS = []
-            if not labels:
-                print('No Messages found.')
+            if len(labels) == 0:
+                django_messages.error(request,
+                                      "No Label found!")
             else:
                 OPTIONS = [(label['id'], label['name']) for label in labels if "CATEGORY" in label['id']]
 
@@ -201,7 +217,7 @@ def members(request):
 
 
 def login_error(request):
-    context = {"message": "There is another user already in use. Please logout first!"}
+    context = {"message": "You have logged in using another Gmail account. Please logout first!"}
     template = 'login_error.html'
     return render(request, template, context)
 
